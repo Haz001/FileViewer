@@ -1,0 +1,10 @@
+F:\C#\FileViewer\FileViewer\FileViewer\bin\Debug\FileViewer.exe.config
+F:\C#\FileViewer\FileViewer\FileViewer\bin\Debug\FileViewer.exe
+F:\C#\FileViewer\FileViewer\FileViewer\bin\Debug\FileViewer.pdb
+F:\C#\FileViewer\FileViewer\FileViewer\obj\Debug\FileViewer.csprojAssemblyReference.cache
+F:\C#\FileViewer\FileViewer\FileViewer\obj\Debug\FileViewer.Form1.resources
+F:\C#\FileViewer\FileViewer\FileViewer\obj\Debug\FileViewer.Properties.Resources.resources
+F:\C#\FileViewer\FileViewer\FileViewer\obj\Debug\FileViewer.csproj.GenerateResource.cache
+F:\C#\FileViewer\FileViewer\FileViewer\obj\Debug\FileViewer.csproj.CoreCompileInputs.cache
+F:\C#\FileViewer\FileViewer\FileViewer\obj\Debug\FileViewer.exe
+F:\C#\FileViewer\FileViewer\FileViewer\obj\Debug\FileViewer.pdb

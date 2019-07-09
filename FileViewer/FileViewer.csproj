@@ -83,7 +83,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="FileViewer_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -101,10 +100,13 @@
     <None Include="Resources\20180827_155533.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\source.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Resources\doc.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\source.txt" />
+    <None Include="Resources\folder.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

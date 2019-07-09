@@ -34,5 +34,7 @@ Once in beta it will have most of the features (the common features) that File E
 ## Why do i need a better File Browser
 Better Productivity and more cusomizeability.
 
+## Releases
+v0.0.1 - Consept
 
 

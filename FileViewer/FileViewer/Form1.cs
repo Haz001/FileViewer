@@ -33,25 +33,45 @@ namespace FileViewer
             int w = (int)Screen.GetBounds(new Point(this.Left, this.Top)).Width ;
 
             
-            bmp = new Bitmap(Blur(new Bitmap(img, new Size(w/10,h/10) ),4), new Size(w,h));
+            bmp = new Bitmap(Other.Blur(new Bitmap(img, new Size(w/10,h/10) ),4), new Size(w,h));
             
         }
-
+        public List<_Index> CDir = new List<_Index> { };
         private void Form1_Load(object sender, EventArgs e)
         {
+            
             path = System.IO.Directory.GetCurrentDirectory();
             path_tb.Text = path;
-            FileFunction.DirSearch(path);
-            var ts = FileFunction.files;
+            updateDir();
 
+
+        }
+        public void updateDir()
+        {
+            path_tb.Text = path;
+            CDir = new List<_Index> { new _Index(0, "../", 1) };
+            browser_lv.Clear();
+            FileFunction.DirSearch(path);
+            var ts = FileFunction.Nfiles;
+            var ts2 = FileFunction.Nfolders;
             foreach (_File s in ts)
             {
                 
-                browser_lv.Items.Add(s.Name, 0);
+                    CDir.Add(new _Index(s.UIN, s.Name, 0)); 
                 //MessageBox.Show(s.Tags.ToString());
 
             }
-
+            foreach (_Folder s in ts2)
+            {
+                CDir.Add(new _Index(s.UIN, s.Name, 1));
+            }
+            foreach (_Index s in CDir)
+            {
+                if ((path != "C:\\") || (s.UIN != 0))
+                {
+                    browser_lv.Items.Add(s.UIN.ToString(), s.Name, Convert.ToInt32(s.Type));
+                }
+            }
         }
         
 
@@ -70,57 +90,7 @@ namespace FileViewer
         {
             g = side_pnl.CreateGraphics();
         }
-        private static Bitmap Blur(Bitmap image, Int32 blurSize)
-        {
-            return Blur(image, new Rectangle(0, 0, image.Width, image.Height), blurSize);
-        }
-
-        private static Bitmap Blur(Bitmap image, Rectangle rectangle, Int32 blurSize)
-        {
-            Bitmap blurred = new Bitmap(image.Width, image.Height);
-
-            // make an exact copy of the bitmap provided
-            using (Graphics graphics = Graphics.FromImage(blurred))
-                graphics.DrawImage(image, new Rectangle(0, 0, image.Width, image.Height),
-                    new Rectangle(0, 0, image.Width, image.Height), GraphicsUnit.Pixel);
-
-            // look at every pixel in the blur rectangle
-            for (int xx = rectangle.X; xx < rectangle.X + rectangle.Width; xx++)
-            {
-                for (int yy = rectangle.Y; yy < rectangle.Y + rectangle.Height; yy++)
-                {
-                    int avgR = 0, avgG = 0, avgB = 0;
-                    int blurPixelCount = 0;
-
-                    // average the color of the red, green and blue for each pixel in the
-                    // blur size while making sure you don't go outside the image bounds
-                    for (int x = xx; (x < xx + blurSize && x < image.Width); x++)
-                    {
-                        for (int y = yy; (y < yy + blurSize && y < image.Height); y++)
-                        {
-                            Color pixel = blurred.GetPixel(x, y);
-
-                            avgR += pixel.R;
-                            avgG += pixel.G;
-                            avgB += pixel.B;
-
-                            blurPixelCount++;
-                        }
-                    }
-
-                    avgR = avgR / blurPixelCount;
-                    avgG = avgG / blurPixelCount;
-                    avgB = avgB / blurPixelCount;
-
-                    // now that we know the average for the blur size, set each pixel to that color
-                    for (int x = xx; x < xx + blurSize && x < image.Width && x < rectangle.Width; x++)
-                        for (int y = yy; y < yy + blurSize && y < image.Height && y < rectangle.Height; y++)
-                            blurred.SetPixel(x, y, Color.FromArgb(avgR, avgG, avgB));
-                }
-            }
-
-            return blurred;
-        }
+        
 
         private void side_pnl_Resize(object sender, EventArgs e)
         {
@@ -185,14 +155,7 @@ namespace FileViewer
             if(e.KeyValue == 13)
             {
                 path = path_tb.Text;
-                //List<string> ts = FileFunction.DirSearch(path);
-
-                //foreach (string s in ts)
-                //{
-
-                //    browser_lv.Items.Add(Path.GetFileName(s), 0);
-
-                //}
+                updateDir();
             }
         }
 
@@ -204,6 +167,76 @@ namespace FileViewer
         private void powers_btn_Click(object sender, EventArgs e)
         {
             Process.Start("powershell", "-command cd " + path+"\npowershell");
+        }
+
+        private void browser_lv_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+            
+        }
+        public ListViewItem CSelect = new ListViewItem();
+        private void browser_lv_DoubleClick(object sender, EventArgs e)
+        {
+            CSelect = browser_lv.SelectedItems[0];
+            open(CSelect);
+        }
+        public void open(ListViewItem i)
+        {
+            foreach (_Index x in CDir)
+            {
+                
+                if (x.UIN.ToString() == i.Name)
+                {
+                    if (x.Type == 0)
+                    {
+                        foreach (_File s in FileFunction.Nfiles)
+                        {
+                            if (x.UIN == s.UIN)
+                            {
+                                //MessageBox.Show(@"" + s.FullLocation);
+                                Process.Start(@"" + s.FullLocation);
+                            }
+                        }
+                    }
+                    if (x.Type == 1)
+                    {
+                        if (x.UIN != 0)
+                        {
+                            foreach (_Folder s in FileFunction.Nfolders)
+                            {
+                                if (x.UIN == s.UIN)
+                                {
+                                    //MessageBox.Show(@"" + s.FullLocation);
+                                    path = s.FullLocation;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            path = Path.GetDirectoryName(path);
+                            
+                        }
+                        updateDir();
+                    }
+
+                }
+            }
+        }
+        private void browser_lv_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            CSelect = browser_lv.SelectedItems[0];
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(this.Height > 32)
+            {
+                this.Height = 32;
+            }
+            else
+            {
+                this.Height = 500;
+            }
         }
     }
 }

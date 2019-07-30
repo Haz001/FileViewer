@@ -35,6 +35,7 @@ Once in beta it will have most of the features (the common features) that File E
 Better Productivity and more cusomizeability.
 
 ## Releases
-v0.0.1 - Consept
+- [v0.0.2](https://github.com/Haz001/FileViewer/releases/tag/v0.0.2-alpha) - First Alpha
+- [v0.0.1]() - Consept
 
 

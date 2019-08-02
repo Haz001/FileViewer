@@ -17,14 +17,17 @@ namespace FileViewer
     {
         public static ulong UINC = 1;
         public static string current_dir = "C:\\";
-        public static List<_File> files = new List<_File> { };
-        public static List<_Folder> folders = new List<_Folder> { };
-        public static List<_File> Nfiles = new List<_File> { };
-        public static List<_Folder> Nfolders = new List<_Folder> { };
+        public static Dictionary<string, _File> files = new Dictionary<string, _File> { };
+        public static Dictionary<string, _Folder> folders = new Dictionary<string, _Folder> { };
+        public static List<string> Nfiles = new List<string> { };
+        public static List<string> Nfolders = new List<string> { };
+
+
+
         public static void DirSearch(string sDir)
         {
-            Nfiles = new List<_File> { };
-            Nfolders = new List<_Folder> { };
+            Nfiles = new List<string> { };
+            Nfolders = new List<string> { };
             try
             {
                 foreach (string f in Directory.GetFiles(sDir))
@@ -32,11 +35,20 @@ namespace FileViewer
                     try
                     {
                         var x = new _File(f);
-                        if (!files.Contains(x))
+                        if (!files.ContainsValue(x))
                         {
-                            files.Add(x);
+                            FileFunction.UINC++;
+
+                            files.Add(FileFunction.UINC.ToString(), x);
+                            Nfolders.Add(FileFunction.UINC.ToString());
                         }
-                        Nfiles.Add(x);
+                        else
+                        {
+
+                            string UIN = files.FirstOrDefault(files => files.Value == x).Key;
+                            Nfiles.Add(UIN);
+                        }
+
 
 
                     }
@@ -52,12 +64,19 @@ namespace FileViewer
                     try
                     {
                         var x = new _Folder(d);
-                        if (!folders.Contains(x))
+                        if (!folders.ContainsValue(x))
                         {
-                            folders.Add(x);
+                            FileFunction.UINC++;
+
+                            folders.Add(FileFunction.UINC.ToString(), x);
+                            Nfolders.Add(FileFunction.UINC.ToString());
                         }
-                        Nfolders.Add(x);
-                        //files.AddRange(DirSearch(d));
+                        else
+                        {
+
+                            string UIN = folders.FirstOrDefault(folders => folders.Value == x).Key;
+                            Nfolders.Add(UIN);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -70,34 +89,142 @@ namespace FileViewer
             {
 
                 System.Windows.Forms.MessageBox.Show("access denied");
-           
-            
+
+
 
             }
-            
 
+
+        }
+    }
+    public class Crawler
+    {
+        public static _ILst index = new _ILst();
+        public static List<string> CDir = new List<string> { };
+
+        public static void DirSearch(string sDir)
+        {
+            CDir = new List<string> { };
+            try
+            {
+                foreach (string f in Directory.GetFiles(sDir))
+                {
+                    try
+                    {
+                        CDir.Add(index.Log(f, 0).ToString());
+                    }
+                    catch (Exception e)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Access denied");
+                    }
+                }
+                foreach (string d in Directory.GetDirectories(sDir))
+                {
+                    try
+                    {
+                        CDir.Add(index.Log(d, 1).ToString());
+                    }
+                    catch (Exception e)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Access denied");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                System.Windows.Forms.MessageBox.Show("Access denied");
+            }
         }
     }
     public class _Folder
     {
         public string Name { get; }
-        public string Location { get; }
         public string FullLocation { get; }
-        public ulong UIN { get; }
+
         public _Folder(string folderpath)
         {
-            FileFunction.UINC++;
-            UIN = FileFunction.UINC;
             FullLocation = folderpath;
             Name = Path.GetFileName(folderpath);
-            Location = Path.GetFileName(Path.GetDirectoryName(folderpath));
+        }
+    }
+    public class _ILst {
+        ulong UiC = 0;
+        public _ILst()
+        {
 
+        }
+        public ulong Indexed()
+        {
+            return UiC;
+        }
+        private List<_Index> index = new List<_Index> { };
+        public _Index Get(string key)
+        {
+            foreach(_Index i in index)
+            {
+                if (i.UI.ToString() == key)
+                {
+                    return i;
+                }
+            }
+            return null;
+        }
+        /// <summary>
+        /// Gives the UI of that file/Folder
+        /// </summary>
+        /// <param name="iPath">Path of File/Folder</param>
+        /// <param name="iType">
+        /// Type:
+        /// 0 - file,
+        /// 1 - Folder</param>
+        /// <returns></returns>
+        public ulong Log(string iPath,short iType)
+        {
+            //Unique Identifier
+            ulong UI = 0;
+            //UI Valid
+            bool UiV = false;
+            foreach (_Index i in index)
+            {
+                if ((i.Type == 0) && (iType == 0)){
+                    if(i.file.FullLocation == iPath)
+                    {
+                        UI = i.UI;
+                        UiV = true;
+                    }
+                }
+                else if ((i.Type == 1) && (iType == 1))
+                {
+                    if (i.folder.FullLocation == iPath)
+                    {
+                        UI = i.UI;
+                        UiV = true;
+                    }
+                    
+                }
+            }
+            
+            if (!UiV)
+            {
+                UiC++;
+                UI = UiC;
+                if (iType == 0)
+                {
+                    index.Add(new _Index(UI, new _File(iPath)));
+                }
+                else if (iType == 1)
+                {
+                    index.Add(new _Index(UI, new _Folder(iPath)));
+                }
+                
+            }
+            return UI;
         }
     }
     public class _File
     {
         //Unique Identification Number (Future plans to speed up indexing)
-        public ulong UIN { get; }
+
         //Name Of File E.G. C:\file.txt -> file
         public string Name { get; }
         //Path Of file E.G. C:\file.txt -> C:\
@@ -108,6 +235,13 @@ namespace FileViewer
         public string Extension { get; }
         //Tags the file has
         public List<string> Tags { get; }
+        //Access Variables
+        public DateTime Create { get; }
+        public DateTime Lastaccess { get; }
+        public DateTime Lastwrite { get; }
+        //Size of file in bytes
+        public ulong size { get; }
+
         //Number corosponding to type, Future plans
         /// <summary>
         /// 0 - binary
@@ -119,29 +253,33 @@ namespace FileViewer
         public short Type { get; set; }
         public _File(string filepath)
         {
-            FileFunction.UINC++;
-            UIN = FileFunction.UINC;
+
             FullLocation = filepath;
-            Location = Path.GetPathRoot(filepath);
+            Location = Directory.GetParent(filepath).ToString();
             Extension = Path.GetExtension(filepath);
             Name = Path.GetFileName(filepath);
-            var x = File.GetAttributes(filepath);
-            if(FileAttributes.ReadOnly == x){
-                Tags.Add("RO");
-            }
-            if (FileAttributes.Hidden == x)
-            {
-                Tags.Add("Hid");
-            }
-            if (FileAttributes.System == x)
-            {
-                Tags.Add("Sys");
-            }
-            if (FileAttributes.Directory == x)
-            {
-                Tags.Add("Sys");
-            }
+            Create = File.GetCreationTimeUtc(filepath);
+            Lastaccess = File.GetLastAccessTimeUtc(filepath);
+            Lastwrite = File.GetLastWriteTimeUtc(filepath);
             
+            size = Convert.ToUInt64(new FileInfo(filepath).Length);
+            //var x = File.GetAttributes(filepath);
+            //if(FileAttributes.ReadOnly == x){
+            //    Tags.Add("RO");
+            //}
+            //if (FileAttributes.Hidden == x)
+            //{
+            //    Tags.Add("Hid");
+            //}
+            //if (FileAttributes.System == x)
+            //{
+            //    Tags.Add("Sys");
+            //}
+            //if (FileAttributes.Directory == x)
+            //{
+            //    Tags.Add("Sys");
+            //}
+
         }
     }
     public class Other
@@ -202,20 +340,31 @@ namespace FileViewer
         /// <summary>
         /// Unique Identifiyer Number
         /// </summary>
-        public ulong UIN {get;set;}
+        public ulong UI {get;set;}
         /// <summary>
-        /// Name Of File
+        /// File/Folder
         /// </summary>
-        public string Name {get;set;}
+        public _File file { get; set; }
+        public _Folder folder { get; set; }
         /// <summary>
-        /// Type
+        /// Type:
+        /// 0 - File,
+        /// 1 - Folder
         /// </summary>
         public short Type { get; set; }
-        public _Index(ulong uin,string name,short type)
+        public _Index(ulong ui,_File f)
         {
-            UIN = uin;
-            Name = name;
-            Type = type;
+            UI = ui;
+            file = f;
+            Type = 0;
+
+
+        }
+        public _Index(ulong ui, _Folder f)
+        {
+            UI= ui;
+            folder = f;
+            Type = 1;
 
         }
     }

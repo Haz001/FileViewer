@@ -1,6 +1,6 @@
 # FileViewer
 A simple file browser/viewer to browse through files on your Windows PC. <br/>
-The basic Consept idea:
+Screenshot:
 ![Img](https://hazonline.co.uk/FileViewer/img/img2.PNG)
 
 ToDo List:

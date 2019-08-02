@@ -1,7 +1,7 @@
 # FileViewer
 A simple file browser/viewer to browse through files on your Windows PC. <br/>
 The basic Consept idea:
-![Img](https://hazonline.co.uk/FileViewer/img/img2.PNG)
+![Img](https://hazonline.co.uk/FileViewer/img/screenshot-fileviewer3.PNG)
 
 ToDo List:
 - [x] List files in directory
@@ -35,7 +35,8 @@ Once in beta it will have most of the features (the common features) that File E
 Better Productivity and more cusomizeability.
 
 ## Releases
-- [v0.0.2](https://github.com/Haz001/FileViewer/releases/tag/v0.0.2-alpha) - First Alpha
+- [v0.0.3](https://github.com/Haz001/FileViewer/releases/tag/v0.0.2-alpha)
+- [v0.0.2](https://github.com/Haz001/FileViewer/releases/tag/v0.0.2-alpha) - First Working Prototype
 - [v0.0.1](https://github.com/Haz001/FileViewer/releases/tag/v0.0.1-alpha) - Consept
 
 
